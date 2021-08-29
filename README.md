@@ -1,10 +1,12 @@
 # uro
-Using a URL list for security testing can be painful as there are a lot of URLs that have uninteresting/duplicate content; `uro` aims to solve that. It removes:
+Using a URL list for security testing can be painful as there are a lot of URLs that have uninteresting/duplicate content; `uro` aims to solve that.
+
+It doesn't make any http requests to the URLs and removes:
 - human written content e.g. blog posts
 - urls with same path but parameter difference
 - incremental urls e.g. `/cat/1/` and `/cat/2/`
 - image, js, css and other static files
- 
+
 #### Usage
 First, install uro with pip:
 ```
