@@ -1,4 +1,4 @@
-# uru
+# uro
 Using a URL list for security testing can be painful as there are a lot of URLs that have uninteresting/duplicate content; `uro` aims to solve that. It removes:
 - human written content e.g. blog posts
 - urls with same path but parameter difference
