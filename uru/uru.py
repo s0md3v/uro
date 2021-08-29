@@ -137,10 +137,8 @@ def main():
 					continue
 				pattern = create_pattern(path)
 				if matches_patterns(path):
-					print(path, 'matches_patterns')
 					continue
 				if '\\d+' in pattern and not pattern_exists(pattern):
-					print(path, 'create_pattern', pattern)
 					patterns_seen.append(pattern)
 			if path not in urlmap[host]:
 				urlmap[host][path] = [params] if params else []
