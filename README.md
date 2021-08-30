@@ -3,7 +3,7 @@ Using a URL list for security testing can be painful as there are a lot of URLs 
 
 It doesn't make any http requests to the URLs and removes:
 - human written content e.g. blog posts
-- urls with same path but parameter difference
+- urls with same path but parameter value difference
 - incremental urls e.g. `/cat/1/` and `/cat/2/`
 - image, js, css and other static files
 
