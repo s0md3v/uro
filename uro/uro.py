@@ -9,7 +9,7 @@ patterns_seen = []
 content_patterns = []
 
 blacklist = r'(post|blog)s?|docs|support/|/(\d{4}|pages?)/\d+/'
-static_exts = ('js', 'css', 'png', 'pdf', 'jpg', 'jpeg', 'ico', 'bmp')
+static_exts = ('js', 'css', 'png', 'pdf', 'jpg', 'jpeg', 'ico', 'bmp', 'svg', 'gif')
 
 
 def params_to_dict(params: str) -> list:
