@@ -29,5 +29,5 @@ setup(
             'uro = uro.uro:main'
         ]
     },
-    keywords=['declutter', 'crawling', 'pentesting', 'bugbounty']
+    keywords=['declutter', 'crawling', 'pentesting']
 )
