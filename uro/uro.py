@@ -63,7 +63,7 @@ def is_content(path: str) -> bool:
 	"""
 	if path.count('-') > 3:
 		new_parts = []
-		for part in path.split('/'):
+		for part in re.escape(path).split('/'):
 			if part.count('-') > 3:
 				new_parts.append('[^/]+')
 			else:
@@ -78,7 +78,7 @@ def create_pattern(path: str) -> str:
 	creates patterns for urls with integers in them
 	"""
 	new_parts = []
-	for part in path.split('/'):
+	for part in re.escape(path).split('/'):
 		if part.isdigit():
 			new_parts.append('\\d+')
 		else:
