@@ -12,11 +12,6 @@ First, install uro with pip:
 ```
 pip3 install uro
 ```
-Or install manually:
-```
-git clone https://github.com/s0md3v/uro && cd uro
-pip3 install .
-```
 Now, there's just one way to use it, no args, no bullshit.
 ```
 cat urls.txt | uro
