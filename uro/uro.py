@@ -1,8 +1,11 @@
 import re
 import sys
 from urllib.parse import urlparse
-from signal import signal, SIGPIPE, SIG_DFL
-signal(SIGPIPE, SIG_DFL)
+try:
+	from signal import signal, SIGPIPE, SIG_DFL
+	signal(SIGPIPE, SIG_DFL)
+except ImportError:
+        pass
 
 urlmap = {}
 params_seen = []
