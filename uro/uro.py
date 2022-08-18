@@ -5,7 +5,7 @@ try:
 	from signal import signal, SIGPIPE, SIG_DFL
 	signal(SIGPIPE, SIG_DFL)
 except ImportError:
-        pass
+	pass
 
 urlmap = {}
 params_seen = []
@@ -38,7 +38,7 @@ def dict_to_params(params: dict) -> str:
 	"""
 	converts dict of params to query string
 	"""
-	stringed = [name + '=' + value for name, value in params.items()]
+	stringed = [f"{name}={value}" for name, value in params.items()]
 	return '?' + '&'.join(stringed)
 
 
@@ -122,7 +122,12 @@ def main():
 	if not sys.stdin.isatty():
 		for line in sys.stdin:
 			parsed = urlparse(line.strip())
-			host = parsed.scheme + '://' + parsed.netloc
+
+			if parsed.scheme is "":
+				host = f"{parsed.netloc}"
+			else:
+				host = f"{parsed.scheme}://{parsed.netloc}"
+
 			if host not in urlmap:
 				urlmap[host] = {}
 			path, params = parsed.path, params_to_dict(parsed.query)
@@ -145,6 +150,6 @@ def main():
 		for path, params in value.items():
 			if params:
 				for param in params:
-					print(host + path + dict_to_params(param))
+					print(f"{host}{path}{dict_to_params(param)}")
 			else:
-				print(host + path)
+				print(f"{host}{path}")
