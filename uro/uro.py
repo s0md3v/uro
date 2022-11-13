@@ -131,13 +131,13 @@ def main():
 			params_seen.extend(new_params)
 			if has_bad_ext(path) or re_content.search(path) or is_content(path):
 				continue
-			if (not params or has_new_param) and re_int.match(path):
+			if (not params or has_new_param) and re_int.search(path):
 				pattern = create_pattern(path)
-				if matches_patterns(path):
-					continue
 				if not pattern_exists(pattern):
 					patterns_seen.append(pattern)
-			elif path not in urlmap[host]:
+				elif matches_patterns(path):
+					continue
+			if path not in urlmap[host]:
 				urlmap[host][path] = [params] if params else []
 			elif has_new_param or compare_params(urlmap[host][path], params):
 				urlmap[host][path].append(params)
