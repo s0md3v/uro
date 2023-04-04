@@ -7,17 +7,19 @@ It doesn't make any http requests to the URLs and removes:
 - urls with same path but parameter value difference e.g. `/page.php?id=1` and `/page.php?id=2`
 - images, js, css and other "useless" files
 
+![uro-demo](https://i.ibb.co/x2tWCC5/uro-demo.png)
+
 #### Installation
 The recommended way to install uro is through pip as follows:
 ```
 pip3 install uro --user
 ```
+
 ### Basic Usage
+The quickest way to inclue uro in your workflow is to feed it data through stdin and print it to your terminal.
 ```
 cat urls.txt | uro
 ```
-
-![uro-demo](https://i.ibb.co/x2tWCC5/uro-demo.png)
 
 ### Advanced usage
 #### Reading urls from a file (-i/--input)
