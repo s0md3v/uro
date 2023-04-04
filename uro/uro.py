@@ -40,9 +40,9 @@ patterns_seen = []
 
 re_int = re.compile(r'/\d+([?/]|$)')
 
-ext_list = clean_nargs(args.blacklist) if args.blacklist else ('js', 'css', 'png', 'jpg', 'jpeg', 'svg',
-	'ico','webp', 'ttf', 'otf', 'woff', 'gif',
-	'pdf', 'bmp', 'eot', 'mp3', 'woff2', 'mp4', 'avi'
+ext_list = clean_nargs(args.blacklist) if args.blacklist else ('css', 'png', 'jpg', 'jpeg', 'svg',
+	'ico','webp', 'scss','tif','tiff','ttf','otf','woff','woff2', 'gif',
+	'pdf', 'bmp', 'eot', 'mp3', 'mp4', 'avi'
 )
 
 if args.whitelist:
