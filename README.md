@@ -32,11 +32,11 @@ If the file already exists, uro will not overwrite the contents. Otherwise, it w
 `python3 uro.txt -i input.txt -o output.txt`
 
 #### Whitelist (`-w/--whitelist`)
-uro will ignore all other extension except the ones provided.
+uro will ignore all other extensions except the ones provided.
 
 `uro -w php asp html`
 
-**Note:** Extensionless pages e.g. /books/1 will still be included. To remove them too, use  `--filter hasext`.
+**Note:** Extensionless pages e.g. `/books/1` will still be included. To remove them too, use  `--filter hasext`.
 
 #### Blacklist (`-b/--blacklist`)
 uro will ignore the given extensions.
