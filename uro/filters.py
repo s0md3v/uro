@@ -61,3 +61,11 @@ def remove_content(path, params, meta):
 		if part.count('-') > 3:
 			return False
 	return False if re_content.search(path) else True
+
+def has_vuln_param(path, params, meta):
+	"""
+	checks if a url has a vulnerable parameter
+	"""
+	for param in params:
+		if param in meta['vuln_params']:
+			return True
