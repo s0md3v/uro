@@ -52,5 +52,6 @@ For granular control, uro supports the following filters:
 4. **noexts:** only output urls that have no extensions e.g. `http://example.com/page`
 5. **keepcontent:** keep human written content e.g. blogs.
 6. **keepslash:** don't remove trailing slash from urls e.g. `http://example.com/page/`
+7. **vuln:** only ouput urls with paramsters that are know to be vulnerable. [More info.](https://github.com/s0md3v/parth)
 
 Example: `uro --filters hasexts hasparams`
