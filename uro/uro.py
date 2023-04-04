@@ -15,7 +15,7 @@ except ImportError:
 parser = argparse.ArgumentParser()
 parser.add_argument('-i', help='file containing urls', dest='input_file')
 parser.add_argument('-o', help='output file', dest='output_file')
-parser.add_argument('-w', '--whitelist', help='only keep these extension and extension-less urls', dest='whitelist', nargs='+')
+parser.add_argument('-w', '--whitelist', help='only keep these extensions and extensionless urls', dest='whitelist', nargs='+')
 parser.add_argument('-b', '--blacklist', help='remove these extensions', dest='blacklist', nargs='+')
 parser.add_argument('-f', '--filters', help='additional filters, read docs', dest='filters', nargs='+')
 args = parser.parse_args()
