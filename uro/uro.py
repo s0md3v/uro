@@ -1,71 +1,55 @@
+import argparse
 import re
 import sys
 from urllib.parse import urlparse
+
+from uro.utils import *
+from uro.filters import *
+
 try:
 	from signal import signal, SIGPIPE, SIG_DFL
 	signal(SIGPIPE, SIG_DFL)
 except ImportError:
-        pass
+	pass
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-i', help='file containing urls', dest='input_file')
+parser.add_argument('-o', help='output file', dest='output_file')
+parser.add_argument('-w', '--whitelist', help='only keep these extension and extension-less urls', dest='whitelist', nargs='+')
+parser.add_argument('-b', '--blacklist', help='remove these extensions', dest='blacklist', nargs='+')
+parser.add_argument('-f', '--filters', help='additional filters, read docs', dest='filters', nargs='+')
+args = parser.parse_args()
+
+filters = clean_nargs(args.filters)
+active_filters = ['removecontent']
+
+if not args.whitelist or "allexts" in filters:
+	active_filters.append('blacklist')
+if args.whitelist:
+	active_filters.append('whitelist')
+
+active_filters.extend(filters)
+
+if 'keepcontent' in active_filters:
+	active_filters.remove('removecontent')
+	active_filters.remove('keepcontent')
 
 urlmap = {}
 params_seen = []
 patterns_seen = []
 
 re_int = re.compile(r'/\d+([?/]|$)')
-re_content = re.compile(r'(post|blog)s?|docs|support/|/(\d{4}|pages?)/\d+/')
-static_exts = ('js', 'css', 'png', 'jpg', 'jpeg', 'svg',
+
+ext_list = clean_nargs(args.blacklist) if args.blacklist else ('js', 'css', 'png', 'jpg', 'jpeg', 'svg',
 	'ico','webp', 'ttf', 'otf', 'woff', 'gif',
 	'pdf', 'bmp', 'eot', 'mp3', 'woff2', 'mp4', 'avi'
 )
 
-
-def params_to_dict(params: str) -> list:
-	"""
-	converts query string to dict
-	"""
-	the_dict = {}
-	if params:
-		for pair in params.split('&'):
-			parts = pair.split('=')
-			try:
-				the_dict[parts[0]] = parts[1]
-			except IndexError:
-				pass
-	return the_dict
+if args.whitelist:
+	ext_list = clean_nargs(args.whitelist)
 
 
-def dict_to_params(params: dict) -> str:
-	"""
-	converts dict of params to query string
-	"""
-	stringed = [name + '=' + value for name, value in params.items()]
-	return '?' + '&'.join(stringed)
-
-
-def compare_params(og_params: list, new_params: dict) -> bool:
-	"""
-	checks if new_params contain a param
-	that doesn't exist in og_params
-	"""
-	og_set = set([])
-	for each in og_params:
-		for key in each.keys():
-			og_set.add(key)
-	return set(new_params.keys()) - og_set
-
-
-def is_content(path: str) -> bool:
-	"""
-	checks if a path is likely to contain
-	human written content e.g. a blog
-	"""
-	for part in path.split('/'):
-		if part.count('-') > 3:
-			return True
-	return False
-
-
-def create_pattern(path: str) -> str:
+def create_pattern(path):
 	"""
 	creates patterns for urls with integers in them
 	"""
@@ -78,7 +62,7 @@ def create_pattern(path: str) -> str:
 	return '/'.join(new_parts)
 
 
-def pattern_exists(pattern: str) -> bool:
+def pattern_exists(pattern):
 	"""
 	checks if a int pattern exists
 	"""
@@ -91,7 +75,7 @@ def pattern_exists(pattern: str) -> bool:
 	return False
 
 
-def matches_patterns(path: str) -> bool:
+def matches_patterns(path):
 	"""
 	checks if the url matches any of the int patterns
 	"""
@@ -100,15 +84,7 @@ def matches_patterns(path: str) -> bool:
 			return True
 	return False
 
-
-def has_bad_ext(path: str) -> bool:
-	"""
-	checks if a url has a blacklisted extension
-	"""
-	return False if '/' in path.split('.')[-1] else path.lower().endswith(static_exts)
-
-
-def is_new_param(params: list) -> bool:
+def is_new_param(params):
 	"""
 	checks if a there's an unseen param within given params
 	"""
@@ -118,29 +94,71 @@ def is_new_param(params: list) -> bool:
 	return True
 
 
+def apply_filters(path, params):
+	"""
+	apply filters to a url
+	returns True if the url should be kept
+	"""
+	filter_map = {
+		'hasext': has_ext,
+		'noext': no_ext,
+		'hasparams': has_params,
+		'noparams': no_params,
+		'removecontent': remove_content,
+		'blacklist': blacklisted,
+		'whitelist': whitelisted,
+	}
+	results = []
+	meta = {
+		'strict': True if ('hasext' or 'noext') in filters else False,
+		'ext_list': ext_list,
+	}
+	for filter in active_filters:
+		if filter in filter_map:
+			if not filter_map[filter](path, params, meta):
+				return False
+	return True
+
+
+def process_url(url):
+	"""
+	processes a url
+	"""
+	host = url.scheme + '://' + url.netloc
+	if host not in urlmap:
+		urlmap[host] = {}
+	path, params = url.path, params_to_dict(url.query)
+	has_new_param = False if not params else is_new_param(params.keys())
+	new_params = [param for param in params.keys() if param not in params_seen]
+	params_seen.extend(new_params)
+	if (not params or has_new_param) and re_int.search(path):
+		pattern = create_pattern(path)
+		if not pattern_exists(pattern):
+			patterns_seen.append(pattern)
+		elif matches_patterns(path):
+			return
+	keep_url = apply_filters(path, params)
+	if keep_url:
+		if path not in urlmap[host]:
+			urlmap[host][path] = [params] if params else []
+		elif has_new_param or compare_params(urlmap[host][path], params):
+			urlmap[host][path].append(params)
+
 def main():
-	if not sys.stdin.isatty():
-		for line in sys.stdin:
-			parsed = urlparse(line.strip())
-			host = parsed.scheme + '://' + parsed.netloc
-			if host not in urlmap:
-				urlmap[host] = {}
-			path, params = parsed.path, params_to_dict(parsed.query)
-			has_new_param = False if not params else is_new_param(params.keys())
-			new_params = [param for param in params.keys() if param not in params_seen]
-			params_seen.extend(new_params)
-			if has_bad_ext(path) or re_content.search(path) or is_content(path):
-				continue
-			if (not params or has_new_param) and re_int.search(path):
-				pattern = create_pattern(path)
-				if not pattern_exists(pattern):
-					patterns_seen.append(pattern)
-				elif matches_patterns(path):
-					continue
-			if path not in urlmap[host]:
-				urlmap[host][path] = [params] if params else []
-			elif has_new_param or compare_params(urlmap[host][path], params):
-				urlmap[host][path].append(params)
+	input_stream = open(args.input_file, 'r') if args.input_file else None
+	if not input_stream:
+		if not sys.stdin.isatty():
+			input_stream = sys.stdin
+	if not input_stream:
+		print('[ERROR] No input file or stdin.', file=sys.stderr)
+		exit(1)
+	for line in input_stream:
+		cleanline = line.strip() if 'keepslash' in filters else line.strip().rstrip('/')
+		parsed_url = urlparse(cleanline)
+		if parsed_url.netloc:
+			process_url(parsed_url)
+	og_stdout = sys.stdout
+	sys.stdout = open(args.output_file, 'a+') if args.output_file else sys.stdout
 	for host, value in urlmap.items():
 		for path, params in value.items():
 			if params:
