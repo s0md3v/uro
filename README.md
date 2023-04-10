@@ -16,7 +16,7 @@ pip3 install uro --user
 ```
 
 ### Basic Usage
-The quickest way to inclue uro in your workflow is to feed it data through stdin and print it to your terminal.
+The quickest way to include uro in your workflow is to feed it data through stdin and print it to your terminal.
 ```
 cat urls.txt | uro
 ```
@@ -24,12 +24,12 @@ cat urls.txt | uro
 ### Advanced usage
 #### Reading urls from a file (-i/--input)
 
-`python3 uro.txt -i input.txt`
+`uro -i input.txt`
 
 #### Writing urls to a file (-o/--output)
 If the file already exists, uro will not overwrite the contents. Otherwise, it will create a new file.
 
-`python3 uro.txt -i input.txt -o output.txt`
+`uro -i input.txt -o output.txt`
 
 #### Whitelist (`-w/--whitelist`)
 uro will ignore all other extensions except the ones provided.
@@ -43,7 +43,7 @@ uro will ignore the given extensions.
 
 `uro -b jpg png js pdf`
 
-**Note:** uro has a list of "useless" extensions which it removes by default; that list will be overidden by whatever extensions you provide through blacklist option. Extensionless pages e.g. /books/1 will still be included. To remove them too, use `--filter hasext`.
+**Note:** uro has a list of "useless" extensions which it removes by default; that list will be overridden by whatever extensions you provide through blacklist option. Extensionless pages e.g. /books/1 will still be included. To remove them too, use `--filter hasext`.
 
 #### Filters (-f/--filters)
 For granular control, uro supports the following filters:
@@ -54,6 +54,6 @@ For granular control, uro supports the following filters:
 4. **noexts:** only output urls that have no extensions e.g. `http://example.com/page`
 5. **keepcontent:** keep human written content e.g. blogs.
 6. **keepslash:** don't remove trailing slash from urls e.g. `http://example.com/page/`
-7. **vuln:** only ouput urls with paramsters that are know to be vulnerable. [More info.](https://github.com/s0md3v/parth)
+7. **vuln:** only output urls with parameters that are know to be vulnerable. [More info.](https://github.com/s0md3v/parth)
 
 Example: `uro --filters hasexts hasparams`
