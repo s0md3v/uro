@@ -12,7 +12,7 @@ It doesn't make any http requests to the URLs and removes:
 #### Installation
 The recommended way to install uro is through pip as follows:
 ```
-pip3 install uro --user
+pip3 install uro
 ```
 
 ### Basic Usage
