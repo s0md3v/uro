@@ -50,8 +50,8 @@ For granular control, uro supports the following filters:
 
 1. **hasparams:** only output urls that have query parameters e.g. `http://example.com/page.php?id=`
 2. **noparams:** only output urls that have no query parameters e.g. `http://example.com/page.php`
-3. **hasexts:** only output urls that have extensions e.g. `http://example.com/page.php`
-4. **noexts:** only output urls that have no extensions e.g. `http://example.com/page`
+3. **hasext:** only output urls that have extensions e.g. `http://example.com/page.php`
+4. **noext:** only output urls that have no extensions e.g. `http://example.com/page`
 5. **keepcontent:** keep human written content e.g. blogs.
 6. **keepslash:** don't remove trailing slash from urls e.g. `http://example.com/page/`
 7. **vuln:** only output urls with parameters that are know to be vulnerable. [More info.](https://github.com/s0md3v/parth)
