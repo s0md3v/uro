@@ -8,11 +8,11 @@ def check_ext(path, exts):
 	"""
 	if '.' not in path.split('/')[-1]:
 		return False, False
-	return True, path.lower().endswith(tuple(exts))
+	return True, path.lower().endswith(exts)
 
 def has_ext(path, params, meta):
 	"""
-	returns True if url has no extension e.g. example.com/about-us/team
+	returns True if url has extension e.g. example.com/about-us/team.php
 	"""
 	has_ext, _ = check_ext(path, [])
 	return has_ext
