@@ -10,10 +10,11 @@ It doesn't make any http requests to the URLs and removes:
 ![uro-demo](https://i.ibb.co/x2tWCC5/uro-demo.png)
 
 #### Installation
-The recommended way to install uro is through pip as follows:
+The recommended way to install uro is as follows:
 ```
-pip3 install uro
+pipx install uro
 ```
+> Note: If you are using an older version of python, use `pip` instead of `pipx`
 
 ### Basic Usage
 The quickest way to include uro in your workflow is to feed it data through stdin and print it to your terminal.
