@@ -106,10 +106,10 @@ def process_url(url):
 	if host not in urlmap:
 		urlmap[host] = {}
 	path, params = url.path, params_to_dict(url.query)
-	keep_url = apply_filters(path, params)
-	if not keep_url:
-		return
 	new_params = [] if not params else [param for param in params.keys() if param not in params_seen]
+	keep_url = apply_filters(path, params)
+	if not keep_url and not new_params:
+		return
 	params_seen.update(new_params)
 	new_path = path not in urlmap[host]
 	if new_path:

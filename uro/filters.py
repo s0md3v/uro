@@ -1,6 +1,7 @@
 import re
 
 re_content = re.compile(r'(post|blog)s?|docs|support/|/(\d{4}|pages?)/\d+/')
+content_patterns = []
 
 def check_ext(path, exts):
 	"""
@@ -60,7 +61,13 @@ def remove_content(path, params, meta):
 	for part in path.split('/'):
 		if part.count('-') > 3:
 			return False
-	return False if re_content.search(path) else True
+	if path.startswith(tuple(content_patterns)):
+		return False
+	else:
+		match = re.search(re_content,path)
+		if match:
+			content_patterns.append(path[:match.end()])
+	return True
 
 def has_vuln_param(path, params, meta):
 	"""
