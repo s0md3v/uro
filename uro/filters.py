@@ -1,6 +1,7 @@
 import re
 
 re_content = re.compile(r'(post|blog)s?|docs|support/|/(\d{4}|pages?)/\d+/')
+content_params=()# A tuple that makes list of the content parameters
 
 def check_ext(path, exts):
 	"""
@@ -57,10 +58,19 @@ def remove_content(path, params, meta):
 
 	returns False if it is
 	"""
+	global content_params
 	for part in path.split('/'):
 		if part.count('-') > 3:
 			return False
-	return False if re_content.search(path) else True
+	if path.startswith(content_params):
+		return False
+	else:
+		match = re.search(re_content,path)
+		if match:
+			path=path[:match.end()]
+			content_params+=(path,)
+			return True #first occurance
+		return True
 
 def has_vuln_param(path, params, meta):
 	"""

@@ -106,11 +106,11 @@ def process_url(url):
 	if host not in urlmap:
 		urlmap[host] = {}
 	path, params = url.path, params_to_dict(url.query)
-	keep_url = apply_filters(path, params)
-	if not keep_url:
-		return
 	new_params = [] if not params else [param for param in params.keys() if param not in params_seen]
 	params_seen.update(new_params)
+	keep_url = apply_filters(path, params)
+	if not keep_url and not new_params:
+		return
 	new_path = path not in urlmap[host]
 	if new_path:
 		if re_int.search(path):
@@ -152,7 +152,7 @@ def main():
 	og_stdout = sys.stdout
 	sys.stdout = open(args.output_file, 'a+') if args.output_file else sys.stdout
 	for host, value in urlmap.items():
-		for path, params in value.items():
+		for path, params in value.items():			
 			if params:
 				for param in params:
 					print(host + path + dict_to_params(param))
