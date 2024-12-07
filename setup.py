@@ -14,7 +14,7 @@ setup(
     long_description_content_type='text/markdown',
     author='s0md3v',
     license='Apache-2.0 License',
-    url='https://github.com/s0md3v/uro',
+    url='https://github.com/hangyakuzero/uro.git',
     download_url='https://github.com/s0md3v/uro/archive/v%s.zip' % __import__(
         'uro').__version__,
     packages=find_packages(),

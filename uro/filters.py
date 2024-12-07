@@ -1,7 +1,7 @@
 import re
 
 re_content = re.compile(r'(post|blog)s?|docs|support/|/(\d{4}|pages?)/\d+/')
-
+matched_urls = []
 def check_ext(path, exts):
 	"""
 	checks if a url has an extension and if it's in the given list
@@ -60,7 +60,17 @@ def remove_content(path, params, meta):
 	for part in path.split('/'):
 		if part.count('-') > 3:
 			return False
-	return False if re_content.search(path) else True
+			
+	if re_content.search(path):
+		if path not in matched_urls:
+			matched_urls.append(path)
+			return True
+		else: return False
+	else: return True
+		
+	    
+        # If this is the first time this URL has matched, add it to matched_urls
+      
 
 def has_vuln_param(path, params, meta):
 	"""
