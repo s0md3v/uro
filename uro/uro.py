@@ -21,15 +21,38 @@ parser.add_argument('-b', '--blacklist', help='remove these extensions', dest='b
 parser.add_argument('-f', '--filters', help='additional filters, read docs', dest='filters', nargs='+')
 args = parser.parse_args()
 
+filter_map = {
+	'hasext': has_ext,
+	'noext': no_ext,
+	'hasparams': has_params,
+	'noparams': no_params,
+	'removecontent': remove_content,
+	'blacklist': blacklisted,
+	'whitelist': whitelisted,
+	'vuln': has_vuln_param,
+}
+
 filters = clean_nargs(args.filters)
 active_filters = ['removecontent']
 
-if not args.whitelist or "allexts" in filters:
-	active_filters.append('blacklist')
-if args.whitelist:
-	active_filters.append('whitelist')
+if 'allexts' in filters:
+	filters.remove('allexts')
+else:
+	if args.whitelist:
+		active_filters.append('whitelist')
+	else:
+		active_filters.append('blacklist')
 
-active_filters.extend(filters)
+for i in filters:
+	if i in filter_map or i in ('keepcontent', 'keepslash'):
+		active_filters.append(i)
+	elif i + 's' in filter_map:
+		active_filters.append(i + 's')
+	elif i[:-1] in filter_map:
+		active_filters.append(i[:-1])
+	else:
+		print('[ERROR] Invalid filter:', i, file=sys.stderr)
+		exit(1)
 
 if 'keepcontent' in active_filters:
 	active_filters.remove('removecontent')
@@ -76,25 +99,14 @@ def apply_filters(path, params):
 	apply filters to a url
 	returns True if the url should be kept
 	"""
-	filter_map = {
-		'hasext': has_ext,
-		'noext': no_ext,
-		'hasparams': has_params,
-		'noparams': no_params,
-		'removecontent': remove_content,
-		'blacklist': blacklisted,
-		'whitelist': whitelisted,
-		'vuln': has_vuln_param,
-	}
 	meta = {
 		'strict': True if ('hasext' or 'noext') in filters else False,
 		'ext_list': ext_list,
 		'vuln_params': vuln_params,
 	}
 	for filter in active_filters:
-		if filter in filter_map:
-			if not filter_map[filter](path, params, meta):
-				return False
+		if not filter_map[filter](path, params, meta):
+			return False
 	return True
 
 
@@ -108,7 +120,7 @@ def process_url(url):
 	path, params = url.path, params_to_dict(url.query)
 	new_params = [] if not params else [param for param in params.keys() if param not in params_seen]
 	keep_url = apply_filters(path, params)
-	if not keep_url and not new_params:
+	if not keep_url:
 		return
 	params_seen.update(new_params)
 	new_path = path not in urlmap[host]
@@ -133,9 +145,12 @@ def process_line(line):
 	processes a single line from input
 	"""
 	cleanline = line.strip() if keepslash else line.strip().rstrip('/')
-	parsed_url = urlparse(cleanline)
-	if parsed_url.netloc:
-		process_url(parsed_url)
+	try:
+		parsed_url = urlparse(cleanline)
+		if parsed_url.netloc:
+			process_url(parsed_url)
+	except ValueError:
+		pass
 
 def main():
 	if args.input_file:

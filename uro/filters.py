@@ -3,33 +3,42 @@ import re
 re_content = re.compile(r'(post|blog)s?|docs|support/|/(\d{4}|pages?)/\d+/')
 content_patterns = []
 
+"""
+--- NOTE ---
+
+If any active filter returns False, the url will be removed
+
+The returned value of a filter function should be set according to whether we want to keep
+the url or not, it has nothing to say about filter's name or percieved functionality
+"""
+
 def check_ext(path, exts):
 	"""
-	checks if a url has an extension and if it's in the given list
+	not a filter, checks if a url has an extension and if it's in the given list
 	"""
 	if '.' not in path.split('/')[-1]:
 		return False, False
-	return True, path.lower().endswith(tuple(exts))
+	return True, path.lower().endswith(exts)
 
 def has_ext(path, params, meta):
 	"""
 	returns True if url has extension e.g. example.com/about-us/team.php
 	"""
-	has_ext, _ = check_ext(path, [])
+	has_ext, _ = check_ext(path, ())
 	return has_ext
 
 def no_ext(path, params, meta):
 	"""
 	returns True if url has no extension e.g. example.com/about-us/team
 	"""
-	has_ext, _ = check_ext(path, [])
+	has_ext, _ = check_ext(path, ())
 	return not has_ext
 
 def has_params(path, params, meta):
 	"""
 	returns True if url has parameters
 	"""
-	return len(params) > 0
+	return len(params) != 0
 
 def no_params(path, params, meta):
 	"""
